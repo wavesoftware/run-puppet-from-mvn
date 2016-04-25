@@ -1,0 +1,20 @@
+GEM
+  specs:
+    facter (2.4.6)
+    hiera (3.1.1)
+      json_pure
+    json_pure (1.8.3)
+    puppet (4.4.1)
+      facter (> 2.0, < 4)
+      hiera (>= 2.0, < 4)
+      json_pure
+
+PLATFORMS
+  java
+  ruby
+
+DEPENDENCIES
+  puppet
+
+BUNDLED WITH
+   1.11.2

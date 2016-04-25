@@ -1,0 +1,99 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>pl.wavesoftware.hacks</groupId>
+    <artifactId>puppet-from-maven</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+
+    <name>Puppet + librarian-puppet + Maven = Awesome</name>
+    <properties>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <jruby.plugins.version>1.1.5</jruby.plugins.version>
+    </properties>
+
+    <dependencies>
+      <dependency>
+        <groupId>rubygems</groupId>
+        <artifactId>bundler</artifactId>
+        <version>1.11.2</version>
+        <type>gem</type>
+      </dependency>
+
+      <dependency>
+        <groupId>rubygems</groupId>
+        <artifactId>puppet</artifactId>
+        <version>4.4.1</version>
+        <type>gem</type>
+      </dependency>
+      <dependency>
+        <groupId>rubygems</groupId>
+        <artifactId>librarian-puppet</artifactId>
+        <version>2.2.3</version>
+        <type>gem</type>
+      </dependency>
+    </dependencies>
+
+    <build>
+      <plugins>
+        <plugin>
+          <groupId>de.saumya.mojo</groupId>
+          <artifactId>bundler-maven-plugin</artifactId>
+          <version>${jruby.plugins.version}</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>install</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>de.saumya.mojo</groupId>
+          <artifactId>gem-maven-plugin</artifactId>
+          <version>${jruby.plugins.version}</version>
+          <executions>
+            <execution>
+              <id>run-librarian-puppet</id>
+              <phase>process-resources</phase>
+              <goals>
+                <goal>exec</goal>
+              </goals>
+              <configuration>
+                <launchDirectory>${project.build.outputDirectory}</launchDirectory>
+                <execArgLines>
+                  <execArgLine>${project.build.directory}/rubygems/bin/librarian-puppet</execArgLine>
+                  <execArgLine>install</execArgLine>
+                  <execArgLine>--verbose</execArgLine>
+                </execArgLines>
+              </configuration>
+            </execution>
+            <execution>
+              <id>run-puppet</id>
+              <phase>process-resources</phase>
+              <goals>
+                <goal>exec</goal>
+              </goals>
+              <configuration>
+                <launchDirectory>${project.build.outputDirectory}</launchDirectory>
+                <execArgLines>
+                  <execArgLine>${project.build.directory}/rubygems/bin/puppet</execArgLine>
+                  <execArgLine>apply</execArgLine>
+                  <execArgLine>${basedir}/src/main/puppet/site.pp</execArgLine>
+                </execArgLines>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </build>
+
+    <repositories>
+      <repository>
+        <id>rubygems-releases</id>
+        <url>http://rubygems-proxy.torquebox.org/releases</url>
+      </repository>
+    </repositories>
+</project>
